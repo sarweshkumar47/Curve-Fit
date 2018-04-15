@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/inputLayout" />
+
+    <RelativeLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fafafa">
+
+        <EditText
+            android:id="@+id/latitudeEditTextOne"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:hint="Latitude1"
+            android:inputType="numberDecimal|numberSigned" />
+
+        <EditText
+            android:id="@+id/longitudeEditTextOne"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/latitudeEditTextOne"
+            android:hint="Longitude1"
+            android:inputType="numberDecimal|numberSigned" />
+
+        <EditText
+            android:id="@+id/latitudeEditTextTwo"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/latitudeEditTextOne"
+            android:hint="Latitude2"
+            android:inputType="numberDecimal|numberSigned" />
+
+        <EditText
+            android:id="@+id/longitudeEditTextTwo"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/longitudeEditTextOne"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/latitudeEditTextTwo"
+            android:hint="Longitude2"
+            android:inputType="numberDecimal|numberSigned" />
+
+        <Button
+            android:id="@+id/drawCurveLine"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="4dp"
+            android:text="Draw" />
+
+        <Button
+            android:id="@+id/clear"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/drawCurveLine"
+            android:layout_marginStart="4dp"
+            android:text="Clear" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/clear"
+            android:checked="false"
+            android:text="Computation based on screen pixel points" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
