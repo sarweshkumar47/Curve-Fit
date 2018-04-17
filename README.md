@@ -3,6 +3,8 @@ Android library for drawing curves on Google Maps. This library uses Bezier cubi
 intermediate points of a curve.
 
 # Demo
+Try sample app on [Google play store](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
+
 <p align="center" >
 <img src="images/sample_demo.gif" alt="demo" width="220" align="left" />
 <img src="images/sample_india.jpg" alt="sample_india" width="220"/>
