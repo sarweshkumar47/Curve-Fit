@@ -4,9 +4,9 @@ intermediate points of a curve.
 
 # Demo
 <p align="center" >
-<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/sample_demo.gif" alt="demo" width="220" align="left" />
-<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/sample_india.jpg" alt="sample_india" width="220"/>
-<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/sample_denmark.jpg" alt="sample_denmark" width="220" align="right" /> </p>
+<img src="images/sample_demo.gif" alt="demo" width="220" align="left" />
+<img src="images/sample_india.jpg" alt="sample_india" width="220"/>
+<img src="images/sample_denmark.jpg" alt="sample_denmark" width="220" align="right" /> </p>
 
 # Setup
 ### Gradle
