@@ -66,7 +66,6 @@ public final class WorkerHandlerThread extends HandlerThread {
     @Override
     protected void onLooperPrepared() {
         super.onLooperPrepared();
-        Log.d("WorkerHandlerThread", "MapsTestCurveActivity, WorkerHandlerThread, onLooperPrepared");
 
         // Get a reference to worker thread's handler after looper is prepared
         workerHandler = new Handler(getLooper()) {
@@ -94,7 +93,6 @@ public final class WorkerHandlerThread extends HandlerThread {
      * using Bezier cubic equation and returns CurveOptions object
      */
     private CurveOptions computePoints(CurveOptions curveOptions, Projection mapProjection) {
-        Log.d("WorkerHandlerThread", "MapsTestCurveActivity, WorkerHandlerThread, computePoints");
 
         List<LatLng> latLongArrayList = curveOptions.getLatLngList();
         Long start = System.currentTimeMillis();
@@ -104,9 +102,9 @@ public final class WorkerHandlerThread extends HandlerThread {
 
             if (curveOptions.isComputePointsBasedOnScreenPixels()) {
 
-                // Start and end LatLng coordinates will be converted to screen pixel points and
-                // computes all intermediate screen pixel points using bezier cubic equation and
-                // finally screen pixel points will be converted back to geographic locations
+                // Convert start and end LatLng coordinates to screen pixel points.
+                // Compute all intermediate screen pixel points using bezier cubic equation.
+                // Finally, screen pixel points will be converted back to geographic locations.
 
                 Point startPoint = mapProjection.toScreenLocation(source);
                 Point endPoint = mapProjection.toScreenLocation(destination);
@@ -133,7 +131,7 @@ public final class WorkerHandlerThread extends HandlerThread {
             }
         }
         Long end = System.currentTimeMillis();
-        Log.d("WorkerHandlerThread", "MapsTestCurveActivity, WorkerHandlerThread, task over, took: " + (end - start) + " ms");
+        Log.d("WorkerHandlerThread", "Curve-Fit workerThread finished, took: " + (end - start) + " ms");
         return curveOptions;
     }
 
