@@ -1,9 +1,13 @@
 # Curve-Fit
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Curve--Fit-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7152)
+[![Release](https://img.shields.io/badge/Release-v%201.1.0-red.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_1_1_0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit#license)
+
 Android library for drawing curves on Google Maps. This library uses Bezier cubic equation in order to compute all
 intermediate points of a curve.
 
 # Demo
-Try sample app on [Google play store](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
+[<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/google_play.png" width="220">](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
 
 <p align="center" >
 <img src="images/sample_demo.gif" alt="demo" width="220" align="left" />
@@ -14,7 +18,7 @@ Try sample app on [Google play store](https://play.google.com/store/apps/details
 ### Gradle
 ```
 dependencies {
-    compile 'com.github.sarweshkumar47:curve-fit:1.0.0'
+    implementation 'com.github.sarweshkumar47:curve-fit:1.1.0'
 }
 ```
   
@@ -23,20 +27,22 @@ dependencies {
 <dependency>
  <groupId>com.github.sarweshkumar47</groupId>
  <artifactId>curve-fit</artifactId>
- <version>1.0.0</version>
+ <version>1.1.0</version>
  <type>pom</type>
 </dependency>
 ```
 
 # Usage
+
 In your activity's onCreate() method, use ```getMapAsync()``` to register for the map callback. 
-Implement the ```OnMapReadyCallback``` interface and override the ```onMapReady()``` method
+Implement ```OnMapReadyCallback```, ```OnCurveDrawnCallback```,
+        ```OnCurveClickListener``` interfaces and override the ```onMapReady()``` method
 
 ```java
 @Override
 public void onMapReady(GoogleMap googleMap) {
 
-    // Create CurveManager object and pass googleMaps reference to it
+    // Create a CurveManager object and pass googleMaps reference to it
     curveManager = new CurveManager(googleMap);
 
     // Register a callback to be invoked after curve is drawn on map
@@ -45,7 +51,7 @@ public void onMapReady(GoogleMap googleMap) {
     // Set a listener for curve click events.
     curveManager.setOnCurveClickListener(this);
         
-    // Create a CurveOptions object and add atleast latlong points to it
+    // Create a CurveOptions object and add atleast two latlong points to it
     // You can set different options in CurveOptions object similar to PolyLineOptions
     CurveOptions curveOptions = new CurveOptions();
     curveOptions.add(new LatLng(12.9715987, 77.5945627));
@@ -97,7 +103,15 @@ Check example projects for more info.
 CurveOptions setAlpha(float alpha)
 ```
 
-Defines shape and direction of the curve. Alpha range can vary from -1 to 1
+Defines shape and deviation of a curve. Alpha can vary from -1 to 1. The below images demonstrate how alpha value is used to define the shape and deviation of a curve in the algorithm (default value is 0.5).
+
+
+<p align="center" >
+<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/alpha_positive.png" width="400" align="left"/>
+<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/alpha_negative.png" alt="alpha_negative" width="400" align="right"/> </p>
+
+_Note:_ This behaviour may vary when a curve passes through 180 degree meridian. Sometimes, you may not get perfect curve. In that case, use ```setComputePointsBasedOnScreenPixels(true)``` method to get the desired curve.
+
 
 
 * __ComputePointsBasedOnScreenPixels__
@@ -105,8 +119,15 @@ Defines shape and direction of the curve. Alpha range can vary from -1 to 1
 CurveOptions setComputePointsBasedOnScreenPixels(boolean computePointsBasedOnPixels)
 ```
 
-If set to ```true```, geographic location points will be converted to screen pixel points and algorithm uses screen pixel points
-to compute all curve points.
+If set to ```true```, geographic location points will be converted to screen pixel points and algorithm uses screen pixel points to compute all intermediate curve points. Refer the below image to understand the variations.
+
+<p align="center" >
+<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/curve_diff.png" width="400" align="center" />
+</p>
+
+
+_Note:_ Method ```setComputePointsBasedOnScreenPixels(true)``` gives a perfect curve regardless of the geographical locations. But it has certain limitations. This method requires more computation time. Sometimes, you may a get a strangely shaped curve when the two lat-long points are off the screen (outside the visible region) or when two points are too close at lower zoom levels. Workaround to this problem is to compute the lat-long bounds and zoom the map camera towards the center of the bounds.
+
 
 # Contributions
 Contributions are welcome and much appreciated.
