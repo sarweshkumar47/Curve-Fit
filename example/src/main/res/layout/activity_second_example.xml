@@ -55,10 +55,11 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 android:layout_toEndOf="@+id/profile"
+                android:layout_toRightOf="@+id/profile"
                 android:text="Sarwesh Kumar"
                 android:textColor="#212121"
                 android:textSize="19sp" />
@@ -69,21 +70,25 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/name"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginBottom="8dp"
                 android:layout_toEndOf="@+id/profile"
+                android:layout_toRightOf="@+id/profile"
                 android:text="Karnataka, India"
-                android:textSize="13sp"
-            android:textColor="#757575" />
+                android:textColor="#757575"
+                android:textSize="13sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/month"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_toEndOf="@+id/profile"
+                android:layout_toRightOf="@+id/profile"
                 android:text="MORE INFO"
-                android:textSize="15sp"
-                android:textColor="#FF9800" />
+                android:textColor="#FF9800"
+                android:textSize="15sp" />
 
         </RelativeLayout>
 

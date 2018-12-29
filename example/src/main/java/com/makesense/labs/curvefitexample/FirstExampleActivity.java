@@ -57,6 +57,7 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
     private SupportMapFragment mapFragment;
     private EditText latitudeInputOneEditText, longitudeInputOneEditText;
     private EditText latitudeInputTwoEditText, longitudeInputTwoEditText;
+    private EditText alphaEditText;
     private Button drawButton, clearButton;
     private CheckBox checkBox;
     private CurveManager curveManager;
@@ -68,12 +69,13 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        drawButton = findViewById(R.id.drawCurveLine);
+        drawButton = findViewById(R.id.drawCurveLineButton);
         latitudeInputOneEditText = findViewById(R.id.latitudeEditTextOne);
         longitudeInputOneEditText = findViewById(R.id.longitudeEditTextOne);
         latitudeInputTwoEditText = findViewById(R.id.latitudeEditTextTwo);
         longitudeInputTwoEditText = findViewById(R.id.longitudeEditTextTwo);
-        clearButton = findViewById(R.id.clear);
+        alphaEditText = findViewById(R.id.alphaEditText);
+        clearButton = findViewById(R.id.clearButton);
         checkBox = findViewById(R.id.checkbox);
 
         mapFragment.getMapAsync(this);
@@ -95,6 +97,7 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
                 longitudeInputOneEditText.setText("");
                 latitudeInputTwoEditText.setText("");
                 longitudeInputTwoEditText.setText("");
+                alphaEditText.setText("");
                 checkBox.setChecked(false);
                 map.clear();
             }
@@ -114,8 +117,9 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
         String sourceLongitude = longitudeInputOneEditText.getText().toString().trim();
         String destLatitude = latitudeInputTwoEditText.getText().toString().trim();
         String destLongitude = longitudeInputTwoEditText.getText().toString().trim();
+        String alpha = alphaEditText.getText().toString().trim();
         if (sourceLatitude.equals("") || sourceLongitude.equals("")
-                || destLatitude.equals("") || destLongitude.equals("")) {
+                || destLatitude.equals("") || destLongitude.equals("") || alpha.equals("")) {
             return;
         }
 
@@ -127,7 +131,7 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
         curveOptions.clickable(true);
         curveOptions.setComputePointsBasedOnScreenPixels(checkBox.isChecked());
         curveOptions.setZoomToPosition(true);
-        curveOptions.setAlpha(0.5f);
+        curveOptions.setAlpha(Float.valueOf(alpha));
         curveOptions.width(12);
         List<PatternItem> pattern = Arrays.asList(new Dash(30), new Gap(25));
         curveOptions.pattern(pattern);

@@ -51,9 +51,10 @@
                 android:id="@+id/driverName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_toEndOf="@+id/carProfile"
+                android:layout_toRightOf="@+id/carProfile"
                 android:text="Thomus"
                 android:textColor="@color/grey_800"
                 android:textSize="17sp" />
@@ -63,9 +64,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/driverName"
-                android:layout_marginBottom="4dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="4dp"
                 android:layout_toEndOf="@+id/carProfile"
+                android:layout_toRightOf="@+id/carProfile"
                 android:text="Mercedes-Benz"
                 android:textColor="@color/grey_700"
                 android:textSize="13sp" />
@@ -76,7 +79,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/vehicleName"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_toEndOf="@+id/carProfile"
+                android:layout_toRightOf="@+id/carProfile"
                 android:text="NK 12"
                 android:textColor="@color/grey_700"
                 android:textSize="13sp" />
@@ -85,11 +90,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
+                android:layout_marginLeft="24dp"
                 android:layout_marginTop="2dp"
                 android:layout_toEndOf="@+id/driverName"
+                android:layout_toRightOf="@+id/driverName"
                 android:background="@color/grey_900"
-                android:text="* 4.5"
                 android:padding="2dp"
+                android:text="* 4.5"
                 android:textColor="@color/grey_100"
                 android:textSize="15sp" />
 
@@ -97,12 +104,13 @@
                 android:id="@+id/contact"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:background="@color/grey_100"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@color/grey_100"
                 android:gravity="center"
-                android:textSize="10sp"
+                android:text="CONTACT"
                 android:textColor="@color/light_blue_a400"
-                android:text="CONTACT" />
+                android:textSize="10sp" />
 
         </RelativeLayout>
 
