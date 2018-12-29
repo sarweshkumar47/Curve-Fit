@@ -7,7 +7,7 @@ Android library for drawing curves on Google Maps. This library uses Bezier cubi
 intermediate points of a curve.
 
 # Demo
-[<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/google_play.png" width="220">](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
+[<img src="images/google_play.png" width="220">](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
 
 <p align="center" >
 <img src="images/sample_demo.gif" alt="demo" width="220" align="left" />
@@ -107,8 +107,8 @@ Defines shape and deviation of a curve. Alpha can vary from -1 to 1. The below i
 
 
 <p align="center" >
-<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/alpha_positive.png" width="400" align="left"/>
-<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/alpha_negative.png" alt="alpha_negative" width="400" align="right"/> </p>
+<img src="images/alpha_positive.png" width="400" align="left"/>
+<img src="images/alpha_negative.png" alt="alpha_negative" width="400" align="right"/> </p>
 
 _Note:_ This behaviour may vary when a curve passes through 180 degree meridian. Sometimes, you may not get perfect curve. In that case, use ```setComputePointsBasedOnScreenPixels(true)``` method to get the desired curve.
 
@@ -122,7 +122,7 @@ CurveOptions setComputePointsBasedOnScreenPixels(boolean computePointsBasedOnPix
 If set to ```true```, geographic location points will be converted to screen pixel points and algorithm uses screen pixel points to compute all intermediate curve points. Refer the below image to understand the variations.
 
 <p align="center" >
-<img src="https://github.com/sarweshkumar47/Curve-Fit/blob/master/images/curve_diff.png" width="400" align="center" />
+<img src="images/curve_diff.png" width="400" align="center" />
 </p>
 
 
