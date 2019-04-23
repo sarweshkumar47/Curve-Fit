@@ -112,7 +112,7 @@ Defines shape and deviation of a curve. Alpha can vary from -1 to 1. The below i
 
 
 
-_Note:_ This behaviour may vary when a curve passes through 180 degree meridian. Sometimes, you may not get perfect curve. In that case, use ```setComputePointsBasedOnScreenPixels(true)``` method to get the desired curve.
+_Note:_ This behaviour may vary when a curve passes through 180 degree meridian. Sometimes, you may not get a perfect curve. In that case, use ```setComputePointsBasedOnScreenPixels(true)``` method to get the desired curve.
 
 
 
