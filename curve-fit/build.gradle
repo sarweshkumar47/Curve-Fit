@@ -6,7 +6,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionName "1.1.0"
+        versionName "2.0.0-beta"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -21,24 +21,17 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:support-media-compat:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:animated-vector-drawable:$rootProject.supportLibraryVersion"
-
-    implementation "com.google.android.gms:play-services-maps:$rootProject.playServicesVersion"
+    // maps-sdk-3.0.0-beta.aar file is in libs directory
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
     testImplementation "junit:junit:$rootProject.junitVersion"
     androidTestImplementation "com.android.support.test:runner:$rootProject.runnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
 }
 
 ext {
     PUBLISH_GROUP_ID = 'com.github.sarweshkumar47'
     PUBLISH_ARTIFACT_ID = 'curve-fit'
-    PUBLISH_VERSION = '1.1.0'
+    PUBLISH_VERSION = '2.0.0-beta'
 }
 
 apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'

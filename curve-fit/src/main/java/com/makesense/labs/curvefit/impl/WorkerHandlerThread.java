@@ -22,8 +22,8 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.Projection;
+import com.google.android.libraries.maps.model.LatLng;
 import com.makesense.labs.curvefit.CurveOptions;
 import com.makesense.labs.curvefit.interfaces.UiThreadCallback;
 import com.makesense.labs.curvefit.models.LatLngControlPoints;

@@ -6,8 +6,8 @@ android {
         applicationId "com.makesense.labs.curvefitexample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.1.0"
+        versionCode 4
+        versionName "2.0.0-beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -19,13 +19,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
-
-    implementation "com.google.android.gms:play-services-maps:$rootProject.playServicesVersion"
 
     implementation "com.android.support:support-media-compat:$rootProject.supportLibraryVersion"
     implementation "com.android.support:animated-vector-drawable:$rootProject.supportLibraryVersion"
@@ -34,5 +32,12 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:$rootProject.runnerVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
 
+    implementation "com.google.android.gms:play-services-base:$playServicesBaseVersion"
+    implementation "com.google.android.gms:play-services-basement:$playServicesBasementVersion"
+    implementation "com.google.android.gms:play-services-gcm:$playServicesGcmVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesLocationVersion"
+
     implementation project(path: ':curve-fit')
+
+    implementation files('../curve-fit/libs/maps-sdk-3.0.0-beta.aar')
 }

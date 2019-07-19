@@ -20,8 +20,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Polyline;
+import com.google.android.libraries.maps.GoogleMap;
+import com.google.android.libraries.maps.model.Polyline;
 import com.makesense.labs.curvefit.Curve;
 import com.makesense.labs.curvefit.CurveOptions;
 import com.makesense.labs.curvefit.interfaces.OnCurveClickListener;

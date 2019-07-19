@@ -16,10 +16,10 @@
 
 package com.makesense.labs.curvefit.impl;
 
-import com.google.android.gms.maps.model.Cap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PatternItem;
-import com.google.android.gms.maps.model.Polyline;
+import com.google.android.libraries.maps.model.Cap;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.PatternItem;
+import com.google.android.libraries.maps.model.Polyline;
 import com.makesense.labs.curvefit.Curve;
 
 import java.util.List;

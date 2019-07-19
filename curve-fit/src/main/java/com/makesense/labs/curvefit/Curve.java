@@ -16,9 +16,9 @@
 
 package com.makesense.labs.curvefit;
 
-import com.google.android.gms.maps.model.Cap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.libraries.maps.model.Cap;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.PatternItem;
 
 import java.util.List;
 

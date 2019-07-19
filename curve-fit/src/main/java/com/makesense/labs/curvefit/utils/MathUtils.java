@@ -18,7 +18,7 @@ package com.makesense.labs.curvefit.utils;
 
 import android.graphics.Point;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLng;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;

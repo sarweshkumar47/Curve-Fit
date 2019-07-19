@@ -16,7 +16,7 @@
 
 package com.makesense.labs.curvefit.models;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLng;
 
 public class LatLngControlPoints {
     private LatLng firstLatLngControlPoint;

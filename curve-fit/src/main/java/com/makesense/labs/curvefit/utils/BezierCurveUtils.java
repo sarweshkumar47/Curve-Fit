@@ -18,7 +18,7 @@ package com.makesense.labs.curvefit.utils;
 
 import android.graphics.Point;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLng;
 import com.makesense.labs.curvefit.models.LatLngControlPoints;
 import com.makesense.labs.curvefit.models.PixelControlPoints;
 

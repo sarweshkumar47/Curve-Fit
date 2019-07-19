@@ -16,7 +16,7 @@
 
 package com.makesense.labs.curvefit.models;
 
-import com.google.android.gms.maps.Projection;
+import com.google.android.libraries.maps.Projection;
 import com.makesense.labs.curvefit.CurveOptions;
 
 public class MessageQueueData {
