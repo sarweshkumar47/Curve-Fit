@@ -54,9 +54,7 @@ dependencies {
 # Usage
 
 In your activity's onCreate() method, use ```getMapAsync()``` to register for the map callback. 
-Implement ```OnMapReadyCallback```, ```OnCurveDrawnCallback```,
-
-        ```OnCurveClickListener``` interfaces and override the ```onMapReady()``` method
+Implement ```OnMapReadyCallback```, ```OnCurveDrawnCallback```, ```OnCurveClickListener``` interfaces and override the ```onMapReady()``` method
 
 ```java
 @Override
@@ -177,7 +175,7 @@ protected void onDestroy() {
 }
 
 ```
-Check example projects for more info.
+Check [example projects](https://github.com/sarweshkumar47/Curve-Fit/tree/curve-fit-2.0.0-beta/example/src/main/java/com/makesense/labs/curvefitexample) for more info.
 
 # Advanced usage
 
