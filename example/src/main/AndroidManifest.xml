@@ -24,17 +24,27 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".FirstExampleActivity"
+            android:name=".BasicDemoActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".SecondExampleActivity"
+            android:name=".AddMultipleLatLngPointsExampleActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".ThirdExampleActivity"
+            android:name=".DrawCurveAndPolylineTogetherExampleActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".HandleOrientationChangeExampleActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".TestLibraryFeaturesActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme" />
 

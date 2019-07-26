@@ -22,72 +22,81 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.libraries.maps.CameraUpdateFactory;
 import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
+import com.google.android.libraries.maps.model.BitmapDescriptorFactory;
 import com.google.android.libraries.maps.model.Dash;
 import com.google.android.libraries.maps.model.Gap;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.MarkerOptions;
 import com.google.android.libraries.maps.model.PatternItem;
+import com.makesense.labs.curvefit.Curve;
 import com.makesense.labs.curvefit.CurveOptions;
 import com.makesense.labs.curvefit.impl.CurveManager;
+import com.makesense.labs.curvefit.interfaces.OnCurveDrawnCallback;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SecondExampleActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class BasicDemoActivity extends AppCompatActivity implements OnMapReadyCallback,
+        OnCurveDrawnCallback {
 
     private CurveManager curveManager;
     private GoogleMap map;
     private SupportMapFragment mapFragment;
+    private LatLng sourceLatLng = new LatLng(56.14013025, 10.22158774);
+    private LatLng destinationLatLng = new LatLng(56.153919, 10.199716);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second_example);
-        setTitle("Travel History");
+        setContentView(R.layout.activity_basic_demo);
+        setTitle("Trip booking");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
         curveManager = new CurveManager(map);
-
-        ArrayList<LatLng> latLngArrayList = new ArrayList<>();
-        latLngArrayList.add(new LatLng(12.30548451, 76.65521267));
-        latLngArrayList.add(new LatLng(19.81516491, 85.83133625));
-        latLngArrayList.add(new LatLng(26.9124336, 75.7872709));
-        latLngArrayList.add(new LatLng(28.596111, 83.820278));
+        curveManager.setOnCurveDrawnCallback(this);
 
         CurveOptions curveOptions = new CurveOptions();
-        curveOptions.addAll(latLngArrayList);
+        curveOptions.add(sourceLatLng);
+        curveOptions.add(destinationLatLng);
         curveOptions.color(Color.DKGRAY);
-        curveOptions.setComputePointsBasedOnScreenPixels(false);
+        curveOptions.setComputePointsBasedOnScreenPixels(true);
         curveOptions.setAlpha(0.5f);
-        curveOptions.width(10);
-        List<PatternItem> pattern = Arrays.asList(new Dash(30), new Gap(20));
+        curveOptions.width(12);
+        List<PatternItem> pattern = Arrays.asList(new Dash(30), new Gap(30));
         curveOptions.pattern(pattern);
         curveOptions.geodesic(false);
 
-        for (LatLng position : latLngArrayList) {
-            new MarkerOptions().position(position);
-            map.addMarker(new MarkerOptions().position(position));
-        }
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(21.146633, 79.088860), 5));
+        map.addMarker(new MarkerOptions().position(sourceLatLng).anchor(0.5f, 1f));
+        map.addMarker(new MarkerOptions().position(destinationLatLng).anchor(0.5f, 1f)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        // move the map camera towards a center latLng before drawing the curve
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(56.14683221, 10.2079815), 14));
 
         curveManager.drawCurveAsync(curveOptions);
     }
 
     @Override
     protected void onDestroy() {
+        if (curveManager != null) {
+            curveManager.unregister();
+            curveManager = null;
+        }
         if (map != null) {
             map.stopAnimation();
             map.clear();
@@ -97,21 +106,21 @@ public class SecondExampleActivity extends AppCompatActivity implements OnMapRea
             mapFragment.getMapAsync(null);
             mapFragment = null;
         }
-        if (curveManager != null) {
-            curveManager.unregister();
-            curveManager = null;
-        }
         super.onDestroy();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+        // Respond to the action bar's Up/Home button
+        if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCurveDrawn(Curve curve, CurveOptions options) {
+        Toast.makeText(getBaseContext(), "Curve is drawn..!!!", Toast.LENGTH_SHORT).show();
     }
 }

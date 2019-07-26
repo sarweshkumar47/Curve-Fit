@@ -17,7 +17,6 @@
 package com.makesense.labs.curvefitexample;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.libraries.maps.CameraUpdateFactory;
@@ -43,39 +43,50 @@ import com.google.android.libraries.maps.model.PatternItem;
 import com.makesense.labs.curvefit.Curve;
 import com.makesense.labs.curvefit.CurveOptions;
 import com.makesense.labs.curvefit.impl.CurveManager;
-import com.makesense.labs.curvefit.interfaces.OnCurveClickListener;
 import com.makesense.labs.curvefit.interfaces.OnCurveDrawnCallback;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class FirstExampleActivity extends AppCompatActivity implements OnMapReadyCallback,
-        OnCurveDrawnCallback,
-        OnCurveClickListener {
+public class TestLibraryFeaturesActivity extends AppCompatActivity implements OnMapReadyCallback,
+        OnCurveDrawnCallback {
 
+    public static final String CURVE_OPTIONS_LIST = "curveOptionsList";
+    public static final String TARGET = "target";
+    public static final String ZOOM = "zoom";
     private GoogleMap map;
     private SupportMapFragment mapFragment;
+    private RelativeLayout inputLayout;
     private EditText latitudeInputOneEditText, longitudeInputOneEditText;
     private EditText latitudeInputTwoEditText, longitudeInputTwoEditText;
     private EditText alphaEditText;
-    private Button drawButton, clearButton;
     private CheckBox checkBox;
     private CurveManager curveManager;
+
+    private Set<CurveOptions> curveOptionsHashSet = new HashSet<>();
+    private ArrayList<CurveOptions> curveOptionsArrayList = new ArrayList<>();
+    private Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_example);
+        this.savedInstanceState = savedInstanceState;
+        setContentView(R.layout.activity_test_library_features);
+        setTitle("Test Curve-Fit Library");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        drawButton = findViewById(R.id.drawCurveLineButton);
+        inputLayout = findViewById(R.id.inputLayout);
+        Button drawButton = findViewById(R.id.drawCurveLineButton);
         latitudeInputOneEditText = findViewById(R.id.latitudeEditTextOne);
         longitudeInputOneEditText = findViewById(R.id.longitudeEditTextOne);
         latitudeInputTwoEditText = findViewById(R.id.latitudeEditTextTwo);
         longitudeInputTwoEditText = findViewById(R.id.longitudeEditTextTwo);
         alphaEditText = findViewById(R.id.alphaEditText);
-        clearButton = findViewById(R.id.clearButton);
+        Button clearButton = findViewById(R.id.clearButton);
         checkBox = findViewById(R.id.checkbox);
 
         mapFragment.getMapAsync(this);
@@ -100,16 +111,21 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
                 alphaEditText.setText("");
                 checkBox.setChecked(false);
                 map.clear();
+                curveOptionsArrayList.clear();
+                curveOptionsHashSet.clear();
             }
         });
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         map = googleMap;
         curveManager = new CurveManager(map);
         curveManager.setOnCurveDrawnCallback(this);
-        curveManager.setOnCurveClickListener(this);
+
+        if (savedInstanceState != null) {
+            drawCurveAfterScreenRotation();
+        }
     }
 
     private void drawCurveLine() {
@@ -118,13 +134,14 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
         String destLatitude = latitudeInputTwoEditText.getText().toString().trim();
         String destLongitude = longitudeInputTwoEditText.getText().toString().trim();
         String alpha = alphaEditText.getText().toString().trim();
-        if (sourceLatitude.equals("") || sourceLongitude.equals("")
-                || destLatitude.equals("") || destLongitude.equals("") || alpha.equals("")) {
+        if (sourceLatitude.isEmpty() || sourceLongitude.isEmpty()
+                || destLatitude.isEmpty() || destLongitude.isEmpty() || alpha.isEmpty()) {
             return;
         }
 
         LatLng initLatLng = new LatLng(Double.valueOf(sourceLatitude), Double.valueOf(sourceLongitude));
         LatLng finalLatLng = new LatLng(Double.valueOf(destLatitude), Double.valueOf(destLongitude));
+
         CurveOptions curveOptions = new CurveOptions();
         curveOptions.add(initLatLng);
         curveOptions.add(finalLatLng);
@@ -136,6 +153,7 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
         List<PatternItem> pattern = Arrays.asList(new Dash(30), new Gap(25));
         curveOptions.pattern(pattern);
         curveOptions.geodesic(false);
+
         if (checkBox.isChecked()) {
             curveOptions.color(getResources().getColor(R.color.red_500));
         } else {
@@ -146,56 +164,95 @@ public class FirstExampleActivity extends AppCompatActivity implements OnMapRead
         builder.include(initLatLng);
         builder.include(finalLatLng);
         LatLngBounds bounds = builder.build();
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
-
-        if (curveManager != null) {
-            curveManager.drawCurveAsync(curveOptions);
-        }
 
         map.addMarker(new MarkerOptions().position(initLatLng).anchor(0.5f, 1f));
-        map.addMarker(new MarkerOptions().position(finalLatLng)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                .anchor(0.5f, 1f));
+        map.addMarker(new MarkerOptions().position(finalLatLng).anchor(0.5f, 1f)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
+
+        curveManager.drawCurveAsync(curveOptions);
+    }
+
+    // Draws curve after screen rotation
+    public void drawCurveAfterScreenRotation() {
+        float zoom = savedInstanceState.getFloat(ZOOM);
+        LatLng target = savedInstanceState.getParcelable(TARGET);
+
+        // Move the map camera towards the target before drawing the curve
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(target, zoom));
+
+        if (savedInstanceState.containsKey(CURVE_OPTIONS_LIST)) {
+            ArrayList<CurveOptions> list = savedInstanceState
+                    .getParcelableArrayList(CURVE_OPTIONS_LIST);
+            if (list != null && list.size() > 0) {
+                for (CurveOptions curveOptions : list) {
+                    if (curveOptionsHashSet.add(curveOptions)) {
+                        curveOptionsArrayList.add(curveOptions);
+                        /*
+                         * Here, no need to compute all intermediate points
+                         * Important note: This method must be used only when the curve has
+                         * to be redrawn after the screen rotation or orientation change,
+                         * given curveOptions object is retained in onSaveInstanceState() method.
+                         */
+                        curveManager.drawRetainedCurve(curveOptions);
+
+                        map.addMarker(new MarkerOptions().position(curveOptions.getPoints().get(0)).anchor(0.5f, 1f));
+                        map.addMarker(new MarkerOptions().position(curveOptions.getPoints()
+                                .get(curveOptions.getPoints().size() - 1)).anchor(0.5f, 1f)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                    }
+                }
+            }
+        }
     }
 
     @Override
-    public void onCurveDrawn(Curve curve) {
-        Toast.makeText(getBaseContext(), "Curve drawn..!!!", Toast.LENGTH_SHORT).show();
+    public void onCurveDrawn(Curve curve, CurveOptions options) {
+        Toast.makeText(getBaseContext(), "Curve is drawn..!!!", Toast.LENGTH_SHORT).show();
+        // Add curveOptions object in a list to store/restore during orientation change
+        if (curveOptionsHashSet.add(options)) {
+            curveOptionsArrayList.add(options);
+        }
     }
 
+    /*
+     * Save list of CurveOptions object, map target location
+     * and zoom information in bundle.
+     */
     @Override
-    public void onCurveClick(Curve curve) {
-        Toast.makeText(getBaseContext(), "Color updated..!!!", Toast.LENGTH_SHORT).show();
-        curve.setColor(Color.parseColor("#3E2723"));
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putFloat(ZOOM, map.getCameraPosition().zoom);
+        outState.putParcelable(TARGET, map.getCameraPosition().target);
+        outState.putParcelableArrayList(CURVE_OPTIONS_LIST, curveOptionsArrayList);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
+        if (curveManager != null) {
+            curveManager.unregister();
+            curveManager.setOnCurveDrawnCallback(null);
+            curveManager = null;
+        }
         if (map != null) {
+            map.stopAnimation();
             map.clear();
+            map = null;
         }
         if (mapFragment != null) {
             mapFragment.getMapAsync(null);
             mapFragment = null;
         }
-        if (curveManager != null) {
-            curveManager.unregister();
-            curveManager.setOnCurveDrawnCallback(null);
-            curveManager.setOnCurveClickListener(null);
-            curveManager = null;
-        }
-        drawButton.setOnClickListener(null);
-        clearButton.setOnClickListener(null);
         super.onDestroy();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+        // Respond to the action bar's Up/Home button
+        if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
