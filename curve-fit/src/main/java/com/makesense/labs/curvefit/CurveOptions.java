@@ -16,6 +16,9 @@
 
 package com.makesense.labs.curvefit;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.libraries.maps.model.Cap;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.PatternItem;
@@ -25,14 +28,37 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CurveOptions {
+public class CurveOptions implements Parcelable {
 
-    private final PolylineOptions real = new PolylineOptions();
+    private PolylineOptions real = new PolylineOptions();
     private List<LatLng> latLngList = new ArrayList<>();
     private float alpha = 0.5f;
-    private boolean computePointsBasedOnScreenPixels = false;
+    private boolean computePointsBasedOnScreenPixels;
     private Object data;
-    private boolean zoomToPosition = false;
+    private boolean zoomToPosition;
+
+    private CurveOptions(Parcel in) {
+        real = in.readParcelable(PolylineOptions.class.getClassLoader());
+        latLngList = in.createTypedArrayList(LatLng.CREATOR);
+        alpha = in.readFloat();
+        computePointsBasedOnScreenPixels = in.readByte() != 0;
+        zoomToPosition = in.readByte() != 0;
+    }
+
+    public CurveOptions() {
+    }
+
+    public static final Creator<CurveOptions> CREATOR = new Creator<CurveOptions>() {
+        @Override
+        public CurveOptions createFromParcel(Parcel in) {
+            return new CurveOptions(in);
+        }
+
+        @Override
+        public CurveOptions[] newArray(int size) {
+            return new CurveOptions[size];
+        }
+    };
 
     public CurveOptions add(LatLng point) {
         this.latLngList.add(point);
@@ -196,5 +222,19 @@ public class CurveOptions {
     public CurveOptions setZoomToPosition(boolean zoomToPosition) {
         this.zoomToPosition = zoomToPosition;
         return this;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(real, flags);
+        dest.writeTypedList(latLngList);
+        dest.writeFloat(alpha);
+        dest.writeByte((byte) (computePointsBasedOnScreenPixels ? 1 : 0));
+        dest.writeByte((byte) (zoomToPosition ? 1 : 0));
     }
 }
