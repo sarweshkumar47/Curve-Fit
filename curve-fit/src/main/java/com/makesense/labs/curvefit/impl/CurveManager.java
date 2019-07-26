@@ -30,7 +30,6 @@ import com.makesense.labs.curvefit.interfaces.UiThreadCallback;
 import com.makesense.labs.curvefit.models.MessageQueueData;
 import com.makesense.labs.curvefit.utils.Constants;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public final class CurveManager implements UiThreadCallback {
@@ -42,76 +41,88 @@ public final class CurveManager implements UiThreadCallback {
     private UiHandler mUiHandler;
     private OnCurveClickListener onCurveClickListener;
     private DelegatingCurveClickListener delegatingCurveClickListener;
+    private GoogleMap.OnPolylineClickListener onPolylineClickListener;
 
     public CurveManager(GoogleMap map) {
         mHandlerThread = new WorkerHandlerThread("HandlerThread");
-        mHandlerThread.setUiThreadCallback(this);
         mHandlerThread.start();
+        mHandlerThread.setUiThreadCallback(this);
 
         // Initialize the handler for Ui thread to handle messages from worker thread
-        mUiHandler = new UiHandler(Looper.getMainLooper(), this);
+        mUiHandler = new UiHandler(Looper.getMainLooper());
         this.googleMap = map;
         this.curves = new HashMap<>();
     }
 
-    /**
+    /*
      * Callback to be invoked when curve is drawn on map
      */
     public void setOnCurveDrawnCallback(OnCurveDrawnCallback onCurveDrawnCallback) {
         this.onCurveDrawnCallback = onCurveDrawnCallback;
     }
 
+    /*
+     * Draws a curve, given options set in CurveOptions object.
+     * This method passes curveOptions object to the WorkerThread
+     * which computes all the intermediate points and invokes a
+     * callback once it is drawn.
+     */
     public void drawCurveAsync(CurveOptions curveOptions) {
         addToRequestQueue(curveOptions);
+    }
+
+    /*
+     * Draws a curve, given options set in CurveOptions object.
+     * Important note: This method must be used only when the curve has
+     * to be redrawn after the screen rotation or orientation change,
+     * given curveOptions object is retained in onSaveInstanceState() method.
+     */
+    public void drawRetainedCurve(CurveOptions curveOptions) {
+        Polyline polyline = googleMap.addPolyline(curveOptions.getReal());
+        Curve curve = new DelegatingCurve(polyline, this);
+        curves.put(polyline, curve);
+        if (onCurveDrawnCallback != null) {
+            onCurveDrawnCallback.onCurveDrawn(curve, curveOptions);
+        }
     }
 
     /*
      * Receives messages from handler thread after computing all intermediate points,
      * draws curve on map and invokes callback if it is registered
      */
-    private static class UiHandler extends Handler {
-        private WeakReference<CurveManager> curveManagerWeakReference;
-        private CurveManager curveManager;
+    private class UiHandler extends Handler {
 
-        UiHandler(Looper looper, CurveManager manager) {
+        UiHandler(Looper looper) {
             super(looper);
-            this.curveManagerWeakReference = new WeakReference<>(manager);
-            this.curveManager = curveManagerWeakReference.get();
         }
 
-        // This method will run on UI thread
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case Constants.TASK_COMPLETE:
-                    if (this.curveManager != null) {
-                        CurveOptions curveOptions = (CurveOptions) msg.obj;
-                        // Draws curve on map
-                        Polyline real = curveManagerWeakReference.get().googleMap.
-                                addPolyline(curveOptions.getReal());
-                        Curve curve = new DelegatingCurve(real, curveManager);
-                        curveManager.curves.put(real, curve);
-                        if (curveManager.onCurveDrawnCallback != null) {
-                            curveManager.onCurveDrawnCallback.onCurveDrawn(curve);
-                        }
-                    }
-                    break;
+            // Runs on UI thread
+            if (msg.what == Constants.TASK_COMPLETE) {
+                CurveOptions curveOptions = (CurveOptions) msg.obj;
+                // Draws curve on map
+                Polyline real = googleMap.addPolyline(curveOptions.getReal());
+                Curve curve = new DelegatingCurve(real, CurveManager.this);
+                curves.put(real, curve);
+                if (onCurveDrawnCallback != null) {
+                    onCurveDrawnCallback.onCurveDrawn(curve, curveOptions);
 
-                default:
-                    break;
+                }
             }
         }
+    }
 
-        void cleanup() {
-            if (curveManagerWeakReference != null) {
-                this.curveManagerWeakReference.clear();
-                this.curveManagerWeakReference = null;
-            }
-            if (curveManager != null) {
-                this.curveManager = null;
-            }
-        }
+    /*
+     * Sets a callback to be invoked when a polyline is clicked on the map.
+     * Important note: This method must be used if you are adding a listener
+     *                 to the polyline, instead of directly setting a listener
+     *                 to the googleMap object (Actually, curve is nothing but a polyline :P).
+     *                 Otherwise, curve click listener may not be invoked.
+     */
+    public void setOnPolylineClickListener(GoogleMap.OnPolylineClickListener onPolylineClickListener) {
+        this.onPolylineClickListener = onPolylineClickListener;
     }
 
     /*
@@ -121,36 +132,40 @@ public final class CurveManager implements UiThreadCallback {
         this.onCurveClickListener = onCurveClickListener;
         if (googleMap != null) {
             this.delegatingCurveClickListener = new DelegatingCurveClickListener(
-                    onCurveClickListener, curves);
+                    onCurveClickListener);
             googleMap.setOnPolylineClickListener(delegatingCurveClickListener);
         }
     }
 
-    private static class DelegatingCurveClickListener implements GoogleMap.OnPolylineClickListener {
+    private class DelegatingCurveClickListener implements GoogleMap.OnPolylineClickListener {
 
-        private WeakReference<OnCurveClickListener> onCurveClickListenerWeakReference;
-        private WeakReference<HashMap<Polyline, Curve>> mapWeakReference;
+        private OnCurveClickListener onCurveClickListener;
 
-        DelegatingCurveClickListener(OnCurveClickListener curveClickListener,
-                                     HashMap<Polyline, Curve> curves) {
-            this.onCurveClickListenerWeakReference = new WeakReference<>(curveClickListener);
-            this.mapWeakReference = new WeakReference<>(curves);
+        DelegatingCurveClickListener(OnCurveClickListener curveClickListener) {
+            this.onCurveClickListener = curveClickListener;
         }
 
         @Override
         public void onPolylineClick(Polyline polyline) {
-            onCurveClickListenerWeakReference.get().onCurveClick(mapWeakReference.get().get(polyline));
+            if (curves.containsKey(polyline)) {
+                if (onCurveClickListener != null) {
+                    onCurveClickListener.onCurveClick(curves.get(polyline));
+                }
+            } else {
+                if (onPolylineClickListener != null) {
+                    onPolylineClickListener.onPolylineClick(polyline);
+                }
+            }
         }
 
         void cleanup() {
-            this.onCurveClickListenerWeakReference = null;
-            this.mapWeakReference = null;
+            this.onCurveClickListener = null;
         }
     }
 
     private void addToRequestQueue(CurveOptions options) {
         if (options.getLatLngList().isEmpty() || options.getLatLngList().size() <= 1) {
-            throw new IllegalArgumentException("Requires atleast two latlong points");
+            throw new IllegalArgumentException("Requires at least two LatLng points");
         }
         MessageQueueData messageQueueData = new MessageQueueData(
                 options, googleMap.getProjection());
@@ -172,14 +187,13 @@ public final class CurveManager implements UiThreadCallback {
      * Nullifies all references to avoid leaks
      */
     public void unregister() {
+        if (mUiHandler != null) {
+            mUiHandler.removeMessages(Constants.TASK_COMPLETE, null);
+            mUiHandler = null;
+        }
         if (curves != null) {
             curves.clear();
             curves = null;
-        }
-        if (mUiHandler != null) {
-            mUiHandler.removeMessages(Constants.TASK_COMPLETE, null);
-            mUiHandler.cleanup();
-            mUiHandler = null;
         }
         if (delegatingCurveClickListener != null) {
             delegatingCurveClickListener.cleanup();
@@ -187,6 +201,9 @@ public final class CurveManager implements UiThreadCallback {
         }
         if (onCurveClickListener != null) {
             onCurveClickListener = null;
+        }
+        if (onPolylineClickListener != null) {
+            onPolylineClickListener = null;
         }
         if (onCurveDrawnCallback != null) {
             onCurveDrawnCallback = null;
@@ -196,20 +213,13 @@ public final class CurveManager implements UiThreadCallback {
             googleMap = null;
         }
         if (mHandlerThread != null) {
-            boolean suc = mHandlerThread.quit();
+            mHandlerThread.quit();
             mHandlerThread.setUiThreadCallback(null);
             mHandlerThread = null;
         }
     }
 
-    protected final void onRemove(Polyline polyline) {
+    final void onRemove(Polyline polyline) {
         curves.remove(polyline);
-    }
-
-    public Curve getCurve(Polyline polyline) {
-        if (curves.containsKey(polyline)) {
-            return curves.get(polyline);
-        }
-        return null;
     }
 }

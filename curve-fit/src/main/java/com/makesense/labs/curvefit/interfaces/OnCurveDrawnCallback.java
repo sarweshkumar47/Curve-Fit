@@ -17,11 +17,12 @@
 package com.makesense.labs.curvefit.interfaces;
 
 import com.makesense.labs.curvefit.Curve;
+import com.makesense.labs.curvefit.CurveOptions;
 
 /**
  * Interface definition for a callback to be invoked when a curve is drawn on map.
  */
 public interface OnCurveDrawnCallback {
 
-    void onCurveDrawn(Curve curve);
+    void onCurveDrawn(Curve curve, CurveOptions options);
 }
