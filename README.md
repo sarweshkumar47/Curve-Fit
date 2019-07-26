@@ -1,10 +1,29 @@
 # Curve-Fit
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Curve--Fit-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7152)
-[![Release](https://img.shields.io/badge/Release-v%201.1.0-red.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_1_1_0)
+[![Release](https://img.shields.io/badge/Release-v%202.0.0--beta-red.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_2_0_0_beta)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit#license)
 
 Android library for drawing curves on Google Maps. This library uses Bezier cubic equation in order to compute all
 intermediate points of a curve.
+
+# What's new?
+* Please note that this release only works with [Google Maps Android SDK v.3.0.0 BETA](https://developers.google.com/maps/documentation/android-sdk/v3-client-migration)
+* Compatible with androidX.
+* [bug] Fixed ([#4][i4]) ([#6][i6])
+
+[i4]: https://github.com/sarweshkumar47/Curve-Fit/issues/4
+[i6]: https://github.com/sarweshkumar47/Curve-Fit/issues/6
+
+* [feature] 2 new APIs are added:
+    * Handle clickListeners on polylines.
+    ```
+    curveManager.setPolyLineClickListener(this);
+    ```
+    * Redraw the curve after orientation change.
+    ```
+    curveManager.drawRetainedCurve(curveOptions);
+    ```
+* Parcelable interface is added to ```CurveOptions``` object. It can be saved/retrieved in/from ```Bundle```.    
 
 # Demo
 [<img src="images/google_play.png" width="200">](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
@@ -18,7 +37,7 @@ intermediate points of a curve.
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.sarweshkumar47:curve-fit:1.1.0'
+    implementation 'com.github.sarweshkumar47:curve-fit:2.0.0-beta'
 }
 ```
   
@@ -27,7 +46,7 @@ dependencies {
 <dependency>
  <groupId>com.github.sarweshkumar47</groupId>
  <artifactId>curve-fit</artifactId>
- <version>1.1.0</version>
+ <version>2.0.0-beta</version>
  <type>pom</type>
 </dependency>
 ```
@@ -36,6 +55,7 @@ dependencies {
 
 In your activity's onCreate() method, use ```getMapAsync()``` to register for the map callback. 
 Implement ```OnMapReadyCallback```, ```OnCurveDrawnCallback```,
+
         ```OnCurveClickListener``` interfaces and override the ```onMapReady()``` method
 
 ```java
@@ -73,20 +93,85 @@ public void onMapReady(GoogleMap googleMap) {
     curveManager.drawCurveAsync(curveOptions);
 }
 ```
+#### Handle orientation change
+``` java
+@Override
+    public void onMapReady(final GoogleMap googleMap) {
+        map = googleMap;
+        curveManager = new CurveManager(map);
+        curveManager.setOnCurveDrawnCallback(this);
+
+        if (savedInstanceState != null) {
+            drawCurveAfterScreenRotation();
+        }
+    }
+
+// Draws curve after screen rotation
+public void drawCurveAfterScreenRotation() {
+    float zoom = savedInstanceState.getFloat(ZOOM);
+    LatLng target = savedInstanceState.getParcelable(TARGET);
+
+    // Move the map camera towards the target before drawing the curve
+    map.moveCamera(CameraUpdateFactory.newLatLngZoom(target, zoom));
+
+    if (savedInstanceState.containsKey(CURVE_OPTIONS_LIST)) {
+        ArrayList<CurveOptions> list = savedInstanceState
+                .getParcelableArrayList(CURVE_OPTIONS_LIST);
+        if (list != null && list.size() > 0) {
+            for (CurveOptions curveOptions : list) {
+                if (curveOptionsHashSet.add(curveOptions)) {
+                    curveOptionsArrayList.add(curveOptions);
+                    /*
+                     * Here, no need to compute all intermediate points
+                     * Important note: This method must be used only when the curve has
+                     * to be redrawn after the screen rotation or orientation change,
+                     * given curveOptions object is retained in onSaveInstanceState() method.
+                     */
+                    curveManager.drawRetainedCurve(curveOptions);
+                }
+            }
+        }
+    }
+}
+
+@Override
+public void onCurveDrawn(Curve curve, CurveOptions options) {
+    // Add curveOptions object in a list to store/restore during orientation change
+    if (curveOptionsHashSet.add(options)) {
+        curveOptionsArrayList.add(options);
+    }
+}
+
+/*
+ * Save list of CurveOptions object, map target location
+ * and zoom information in bundle.
+ */
+@Override
+protected void onSaveInstanceState(Bundle outState) {
+    outState.putFloat(ZOOM, map.getCameraPosition().zoom);
+    outState.putParcelable(TARGET, map.getCameraPosition().target);
+    outState.putParcelableArrayList(CURVE_OPTIONS_LIST, curveOptionsArrayList);
+    super.onSaveInstanceState(outState);
+}
+
+```
 
 Remove listeners in order to prevent memory leaks.
 ``` java
 @Override
 protected void onDestroy() {
+    if (curveManager != null) {
+        curveManager.unregister();
+        curveManager = null;
+    }
+    if (map != null) {
+        map.stopAnimation();
+        map.clear();
+        map = null;
+    }
     if (mapFragment != null) {
         mapFragment.getMapAsync(null);
         mapFragment = null;
-    }
-    if (curveManager != null) {
-        curveManager.unregister();
-        curveManager.setOnCurveDrawnCallback(null);
-        curveManager.setOnCurveClickListener(null);
-        curveManager = null;
     }
     super.onDestroy();
 }
