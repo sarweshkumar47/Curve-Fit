@@ -1,10 +1,18 @@
 # Curve-Fit
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Curve--Fit-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7152)
-[![Release](https://img.shields.io/badge/Release-v%201.1.0-red.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_1_1_0)
+[![Release](https://img.shields.io/badge/Release-v%201.1.1-red.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_1_1_1)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat)](https://github.com/sarweshkumar47/Curve-Fit#license)
 
 Android library for drawing curves on Google Maps. This library uses Bezier cubic equation in order to compute all
 intermediate points of a curve.
+
+# Changes
+* Please note that this release only works with Google Maps Android SDK v2. If you are experimenting with
+  Google Maps Android SDK 3.0.0 BETA, try using [CurveFit-2.0.0-beta](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_2_0_0_beta)
+* [bug] Fixed ([#4][i4]) ([#6][i6])
+
+[i4]: https://github.com/sarweshkumar47/Curve-Fit/issues/4
+[i6]: https://github.com/sarweshkumar47/Curve-Fit/issues/6
 
 # Demo
 [<img src="images/google_play.png" width="200">](https://play.google.com/store/apps/details?id=com.makesense.labs.curvefitexample)
@@ -18,7 +26,7 @@ intermediate points of a curve.
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.sarweshkumar47:curve-fit:1.1.0'
+    implementation 'com.github.sarweshkumar47:curve-fit:1.1.1'
 }
 ```
   
@@ -27,7 +35,7 @@ dependencies {
 <dependency>
  <groupId>com.github.sarweshkumar47</groupId>
  <artifactId>curve-fit</artifactId>
- <version>1.1.0</version>
+ <version>1.1.1</version>
  <type>pom</type>
 </dependency>
 ```
@@ -78,15 +86,18 @@ Remove listeners in order to prevent memory leaks.
 ``` java
 @Override
 protected void onDestroy() {
+    if (curveManager != null) {
+        curveManager.unregister();
+        curveManager = null;
+    }
+    if (map != null) {
+        map.stopAnimation();
+        map.clear();
+        map = null;
+    }
     if (mapFragment != null) {
         mapFragment.getMapAsync(null);
         mapFragment = null;
-    }
-    if (curveManager != null) {
-        curveManager.unregister();
-        curveManager.setOnCurveDrawnCallback(null);
-        curveManager.setOnCurveClickListener(null);
-        curveManager = null;
     }
     super.onDestroy();
 }
