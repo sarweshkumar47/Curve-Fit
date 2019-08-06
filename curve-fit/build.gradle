@@ -22,6 +22,7 @@ android {
 
 dependencies {
 
+    implementation "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
     implementation "com.google.android.gms:play-services-maps:$rootProject.playServicesVersion"
 
     testImplementation "junit:junit:$rootProject.junitVersion"
