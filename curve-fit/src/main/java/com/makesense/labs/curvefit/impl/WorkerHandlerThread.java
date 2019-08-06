@@ -32,7 +32,6 @@ import com.makesense.labs.curvefit.models.PixelControlPoints;
 import com.makesense.labs.curvefit.utils.BezierCurveUtils;
 import com.makesense.labs.curvefit.utils.Constants;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -40,10 +39,10 @@ import java.util.List;
  * between two LatLng coordinates
  */
 
-public final class WorkerHandlerThread extends HandlerThread {
+public final class WorkerHandlerThread extends HandlerThread implements Handler.Callback {
 
     private static Handler workerHandler;
-    private WeakReference<UiThreadCallback> uiThreadCallback;
+    private UiThreadCallback uiThreadCallback;
 
     WorkerHandlerThread(String name) {
         super(name);
@@ -53,39 +52,16 @@ public final class WorkerHandlerThread extends HandlerThread {
      * Ui thread sends messages to the worker thread's message queue
      */
     public void addMessage(Message message) {
-        getLooper();
         if (workerHandler != null) {
+            workerHandler.sendMessage(message);
+        } else {
+            workerHandler = new Handler(getLooper(), this);
             workerHandler.sendMessage(message);
         }
     }
 
     public void setUiThreadCallback(UiThreadCallback callback) {
-        this.uiThreadCallback = new WeakReference<>(callback);
-    }
-
-    @Override
-    protected void onLooperPrepared() {
-        super.onLooperPrepared();
-
-        // Get a reference to worker thread's handler after looper is prepared
-        workerHandler = new Handler(getLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-
-                switch (msg.what) {
-                    case Constants.TASK_START: {
-                        MessageQueueData messageQueueData = (MessageQueueData) msg.obj;
-                        CurveOptions options = computePoints(messageQueueData.getCurveOptions(),
-                                messageQueueData.getProjection());
-                        Message message = Message.obtain(null, Constants.TASK_COMPLETE, options);
-                        /* Sends message back to Ui thread*/
-                        uiThreadCallback.get().publishToUiThread(message);
-                        break;
-                    }
-                }
-            }
-        };
+        this.uiThreadCallback = callback;
     }
 
     /*
@@ -149,6 +125,19 @@ public final class WorkerHandlerThread extends HandlerThread {
             workerHandler.removeMessages(Constants.TASK_START, null);
             workerHandler = null;
         }
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        // Sends message back to Ui thread
+        if (msg.what == Constants.TASK_START) {
+            MessageQueueData messageQueueData = (MessageQueueData) msg.obj;
+            CurveOptions options = computePoints(messageQueueData.getCurveOptions(),
+                    messageQueueData.getProjection());
+            Message message = Message.obtain(null, Constants.TASK_COMPLETE, options);
+            uiThreadCallback.publishToUiThread(message);
+        }
+        return false;
     }
 }
 
