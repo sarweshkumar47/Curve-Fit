@@ -40,6 +40,22 @@ dependencies {
 </dependency>
 ```
 
+### JitPack
+```
+allprojects {
+    repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+    }
+}
+```
+Add the dependency
+```
+dependencies {
+    implementation 'com.github.sarweshkumar47:Curve-Fit:version_1_1_1'
+}
+```
+
 # Usage
 
 In your activity's onCreate() method, use ```getMapAsync()``` to register for the map callback. 
