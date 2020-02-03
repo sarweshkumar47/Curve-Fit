@@ -8,7 +8,7 @@ intermediate points of a curve.
 
 # Changes
 * Please note that this release only works with Google Maps Android SDK v2. If you are experimenting with
-  Google Maps Android SDK 3.0.0 BETA, try using [CurveFit-2.0.0-beta](https://github.com/sarweshkumar47/Curve-Fit/releases/tag/version_2_0_0_beta)
+  Google Maps Android SDK 3.0.0 BETA, try using [CurveFit-2.0.0-beta](https://github.com/sarweshkumar47/Curve-Fit/tree/curve-fit-2.0.0-beta)
 * [bug] Fixed ([#4][i4]) ([#6][i6])
 
 [i4]: https://github.com/sarweshkumar47/Curve-Fit/issues/4
